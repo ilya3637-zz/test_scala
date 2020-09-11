@@ -1,7 +1,7 @@
 import scala.collection.mutable.ArrayBuffer
 import scalaj.http.{Http, HttpResponse}
 import org.scalacheck.Properties
-import org.scalacheck.Prop.forAll
+import org.scalacheck._
 import org.scalatest._
 import org.scalatest.prop._
 
@@ -22,7 +22,6 @@ object test {
         	}
         	i += temp_string.length() + 3        	
         }
-        println("binance: " + min)
         return(min)
 	}
 
@@ -43,18 +42,26 @@ object test {
         	}
         	i += temp_string.length() + 2        	
         }
-        println("huobi: " + min)
         return(min)
 	}
 
     def main(args: Array[String]) = {
     	val bitcoin_count = 10
-   		
-   		
-        if (binance_f(bitcoin_count) < huobi_f(bitcoin_count)) {
-        	println("binance better")
+
+
+
+		val smallInteger = Gen.choose(0,100)
+		val test_function = Prop.forAll(smallInteger) { n => binance_f(n) >= 0}
+
+		
+		test_function.check
+		val min_binance = binance_f(bitcoin_count)
+		val min_huobi = huobi_f(bitcoin_count)
+
+        if (min_binance < min_huobi) {
+        	println("binance better, need " + min_binance*bitcoin_count + "$")
         } else {
-			println("huobi better")
+			println("huobi better, need " + min_huobi*bitcoin_count + "$")
         }
 
     }
